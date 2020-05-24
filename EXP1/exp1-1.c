@@ -5,7 +5,7 @@
 #include "gpio.h"
 #include "hw_types.h"
 #include "pin_map.h"
-#include "sysctl.h"
+#include "sysctl.h" 
 
 
 #define   FASTFLASHTIME			(uint32_t) 300000
@@ -15,16 +15,39 @@
 void 		Delay(uint32_t value);
 void 		S800_GPIO_Init(void);
 void		PF0_Flash(uint32_t key_value);
+void 		PF0_Light(uint32_t key_value);
+void 		PF1_Light(uint32_t key_value);
+
+uint32_t push_time=0;
 
 int main(void)
 {
-	uint32_t read_key_value;
+	uint32_t key_value_1,key_value_2;
 	S800_GPIO_Init();
 	while(1)
   {
-		read_key_value = GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_0)	;				//read the PJ0 key value
-		PF0_Flash(read_key_value);
+		key_value_1 = GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_0)	;				//read the PJ0 key value
+		key_value_2 = GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_1)	;				//read the PJ1 key value
+		//PF0_Flash(key_value_1);
+		PF0_Light(key_value_1);
+		PF1_Light(key_value_2);
    }
+}
+
+void PF0_Light(uint32_t key_value)
+{
+	if (key_value == 0)
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
+	else
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0x0);		
+}
+
+void PF1_Light(uint32_t key_value)
+{
+	if (key_value == 0)
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
+	else
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x0);		
 }
 
 void PF0_Flash(uint32_t key_value)
@@ -75,7 +98,3 @@ void S800_GPIO_Init(void)
 	//ui32PinType：引脚类型，可选项包括GPIO_PIN_TYPE_STD（推挽）、GPIO_PIN_TYPE_STD_WPU（推挽上拉）、GPIO_PIN_TYPE_STD_WPD（推挽下拉）、
 	//GPIO_PIN_TYPE_OD（开漏）、GPIO_PIN_TYPE_ANALOG（模拟）、GPIO_PIN_TYPE_WAKE_HIGH（高电平从冬眠唤醒）、GPIO_PIN_TYPE_WAKE_LOW（低）
 }
-
-
-//test for git
-//version 2
