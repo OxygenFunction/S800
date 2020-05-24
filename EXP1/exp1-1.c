@@ -45,9 +45,9 @@ void PF0_Light(uint32_t key_value)
 void PF1_Light(uint32_t key_value)
 {
 	if (key_value == 0)
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_PIN_1);
 	else
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0x0);		
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0x0);		
 }
 
 void PF0_Flash(uint32_t key_value)
@@ -83,7 +83,7 @@ void S800_GPIO_Init(void)
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOJ);						//Enable PortJ	
 	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOJ));			//Wait for the GPIO moduleJ ready	
 	
-  GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_0);			//Set PF0 as Output pin
+  GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_0 | GPIO_PIN_1);			//Set PF0 as Output pin
 	//函数原型：void GPIOPinTypeGPIOOutput(uint32_t ui32Port, uint8_t ui8Pins)
 	//配置GPIO端口引脚为输出引脚，如果字符型（uint8_t）参数ui8Pins某位为1，则GPIO端口对应位配置为输出引脚
 	
