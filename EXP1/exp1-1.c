@@ -14,7 +14,9 @@
 
 void 		Delay(uint32_t value);
 void 		S800_GPIO_Init(void);
-void		PF0_Flash(uint32_t key_value);
+//void		PF0_Flash(uint32_t key_value);
+void		PF0_Flash();
+void		PF1_Flash();
 void 		PF0_Light(uint32_t key_value);
 void 		PF1_Light(uint32_t key_value);
 
@@ -22,16 +24,34 @@ uint32_t push_time=0;
 
 int main(void)
 {
-	uint32_t key_value_1,key_value_2;
+	uint32_t key_value_1,key_value_2,delay_time,push_time=0;
 	S800_GPIO_Init();
+	delay_time = FASTFLASHTIME*5;
 	while(1)
   {
 		key_value_1 = GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_0)	;				//read the PJ0 key value
-		key_value_2 = GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_1)	;				//read the PJ1 key value
-		//PF0_Flash(key_value_1);
-		PF0_Light(key_value_1);
-		PF1_Light(key_value_2);
-   }
+		//key_value_2 = GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_1)	;				//read the PJ1 key value
+		//PF0_Light(key_value_1);
+		//PF1_Light(key_value_2);
+		if (key_value_1==0){
+			Delay(delay_time);
+			if (GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_0)==1){
+				push_time+=1;
+				if (push_time==1)
+					while (GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_0)==1)
+						PF0_Flash();
+				else if (push_time==2)
+					GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0x0);
+				else if (push_time==3)
+					while (GPIOPinRead(GPIO_PORTJ_BASE,GPIO_PIN_0)==1)
+						PF1_Flash();
+				else{
+					push_time=0;
+					GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0x0);
+				}
+			}
+		}
+  }
 }
 
 void PF0_Light(uint32_t key_value)
@@ -50,9 +70,31 @@ void PF1_Light(uint32_t key_value)
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0x0);		
 }
 
-void PF0_Flash(uint32_t key_value)
+void PF0_Flash()
 {
-	uint32_t delay_time;
+		uint32_t delay_time;	
+		delay_time = FASTFLASHTIME;
+		
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);			// Turn on the LED.
+		Delay(delay_time);
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0x0);							// Turn off the LED.
+		Delay(delay_time);
+}
+
+void PF1_Flash()
+{
+		uint32_t delay_time;	
+		delay_time = FASTFLASHTIME;
+		
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_PIN_1);			// Turn on the LED.
+		Delay(delay_time);
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0x0);							// Turn off the LED.
+		Delay(delay_time);
+}
+
+/*void PF0_Flash(uint32_t key_value)
+{
+		uint32_t delay_time;
 		if (key_value	== 0)						//USR_SW1-PJ0 pressed
 			delay_time							= FASTFLASHTIME;
 		else													//USR_SW1-PJ0 released
@@ -62,14 +104,13 @@ void PF0_Flash(uint32_t key_value)
 		Delay(delay_time);
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0x0);							// Turn off the LED.
 		Delay(delay_time);
-}
+}*/
 
 void Delay(uint32_t value)
 {
 	uint32_t ui32Loop;
 	for(ui32Loop = 0; ui32Loop < value; ui32Loop++){};
 }
-
 
 void S800_GPIO_Init(void)
 {
