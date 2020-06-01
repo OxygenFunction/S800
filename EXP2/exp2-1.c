@@ -45,7 +45,8 @@ void		S800_I2C0_Init(void);
 volatile uint8_t result;
 uint32_t ui32SysClock;
 uint8_t seg7[] = {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x77,0x7c,0x58,0x5e,0x079,0x71,0x5c};
-
+uint8_t i=1;
+uint16_t port=1;
 
 int main(void)
 {
@@ -54,11 +55,16 @@ int main(void)
 	
 	S800_GPIO_Init();
 	S800_I2C0_Init();
+	
 	while (1)
 	{
 		
-		result = I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT1,seg7[0]);						//write port 1 				
-		result = I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,(uint8_t)(1));					//write port 2
+		result = I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT1,seg7[i]);						//write port 1 				
+		result = I2C0_WriteByte(TCA6424_I2CADDR,TCA6424_OUTPUT_PORT2,port);								//write port 2
+		i=i+1;
+		port=port*2;
+		if (i==9) i=1;
+		if (port==256) port=1;
 		
 		result = I2C0_WriteByte(PCA9557_I2CADDR,PCA9557_OUTPUT,0x0);	
 
